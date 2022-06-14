@@ -30,7 +30,8 @@ contract Lottery is Ownable {
     function pickWinner() public onlyOwner {
         winner = playersList[getRandomNumber()];
         uint256 prize = address(this).balance;
-        winner.transfer(prize);
+        (bool success, ) = winner.call{value: prize}("");
+        require(success == true, "Transfer failed");
         resetPlayersMapping();
         delete playersList;
         emit WinnerFound(winner, prize);
